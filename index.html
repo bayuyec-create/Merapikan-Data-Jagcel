@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Rumus Excel: Teks & Tanggal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .excel-grid {
+            background-image: 
+                linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .function-card { transition: all 0.2s; }
+        .function-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .formula-bar { font-family: 'Consolas', 'Monaco', monospace; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-green-900 text-white flex flex-col shadow-xl z-20">
+        <div class="p-6 border-b border-green-800 flex items-center gap-3">
+            <i class="fa-solid fa-file-excel text-2xl text-green-400"></i>
+            <h1 class="font-bold text-lg">Excel Master</h1>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4">
+            <div class="px-4 mb-2 text-xs font-semibold text-green-300 uppercase tracking-wider">Pembersihan Data</div>
+            <button onclick="showSection('clean')" class="nav-btn w-full text-left px-6 py-3 hover:bg-green-800 transition flex items-center gap-3 bg-green-800 border-r-4 border-green-400">
+                <i class="fa-solid fa-broom w-5"></i> LEN, TRIM, Case
+            </button>
+            
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-green-300 uppercase tracking-wider">Ekstraksi Data</div>
+            <button onclick="showSection('extract')" class="nav-btn w-full text-left px-6 py-3 hover:bg-green-800 transition flex items-center gap-3">
+                <i class="fa-solid fa-scissors w-5"></i> LEFT, MID, RIGHT
+            </button>
+
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-green-300 uppercase tracking-wider">Penggabungan</div>
+            <button onclick="showSection('combine')" class="nav-btn w-full text-left px-6 py-3 hover:bg-green-800 transition flex items-center gap-3">
+                <i class="fa-solid fa-link w-5"></i> &, CONCAT, TEXTJOIN
+            </button>
+
+            <div class="px-4 mt-6 mb-2 text-xs font-semibold text-green-300 uppercase tracking-wider">Tanggal</div>
+            <button onclick="showSection('date')" class="nav-btn w-full text-left px-6 py-3 hover:bg-green-800 transition flex items-center gap-3">
+                <i class="fa-regular fa-calendar w-5"></i> DATE Function
+            </button>
+        </nav>
+        <div class="p-4 bg-green-950 text-xs text-center text-green-400">
+            Dibuat untuk Pelatihan Excel
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto excel-grid relative">
+        <header class="bg-white shadow-sm p-4 sticky top-0 z-10 flex justify-between items-center">
+            <div>
+                <h2 id="page-title" class="text-xl font-bold text-gray-800">Pembersihan Data (Cleaning)</h2>
+                <p class="text-sm text-gray-500">Rapikan data teks yang berantakan dengan rumus dasar.</p>
+            </div>
+            <div class="bg-gray-100 px-4 py-2 rounded-lg border border-gray-300 flex items-center gap-2">
+                <span class="text-gray-500 font-bold">fx</span>
+                <span id="current-formula-display" class="formula-bar text-sm text-gray-800">Pilih rumus di bawah untuk mencoba...</span>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-5xl mx-auto space-y-12 pb-20">
+
+            <!-- SECTION: CLEANING -->
+            <div id="clean-section" class="section-content space-y-8">
+                
+                <!-- LEN -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden function-card">
+                    <div class="bg-blue-50 p-4 border-b border-blue-100 flex justify-between items-center">
+                        <h3 class="font-bold text-blue-800 text-lg">=LEN(text)</h3>
+                        <span class="bg-blue-200 text-blue-800 text-xs px-2 py-1 rounded font-bold">Menghitung Karakter</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="text-gray-600 mb-4 text-sm">Menghitung jumlah total karakter dalam sel, termasuk spasi dan tanda baca.</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Input Teks:</label>
+                            <input type="text" id="len-input" value="Excel Itu Mudah" class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" oninput="updateLen()">
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p class="text-xs text-gray-500 font-mono mb-1">Hasil Rumus:</p>
+                            <div class="text-2xl font-bold text-gray-800 font-mono" id="len-result">15</div>
+                            <p class="text-xs text-gray-400 mt-2 italic">*Spasi dihitung sebagai 1 karakter</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRIM -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden function-card">
+                    <div class="bg-orange-50 p-4 border-b border-orange-100 flex justify-between items-center">
+                        <h3 class="font-bold text-orange-800 text-lg">=TRIM(text)</h3>
+                        <span class="bg-orange-200 text-orange-800 text-xs px-2 py-1 rounded font-bold">Hapus Spasi</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <p class="text-gray-600 mb-4 text-sm">Menghapus spasi berlebih di awal, akhir, dan ganda di tengah teks.</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Input (Coba tambah banyak spasi):</label>
+                            <input type="text" id="trim-input" value="   Data    Berantakan   " class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:outline-none" oninput="updateTrim()">
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p class="text-xs text-gray-500 font-mono mb-1">Hasil Rumus:</p>
+                            <div class="text-lg font-bold text-gray-800 font-mono bg-yellow-100 inline-block px-1" id="trim-result">Data Berantakan</div>
+                            <div class="mt-2 text-xs text-gray-500">Panjang Asli: <span id="trim-original-len">0</span> | Panjang Baru: <span id="trim-new-len">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAPITALIZATION -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden function-card">
+                    <div class="bg-purple-50 p-4 border-b border-purple-100 flex justify-between items-center">
+                        <h3 class="font-bold text-purple-800 text-lg">LOWER / UPPER / PROPER</h3>
+                        <span class="bg-purple-200 text-purple-800 text-xs px-2 py-1 rounded font-bold">Format Huruf</span>
+                    </div>
+                    <div class="p-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Input Teks:</label>
+                        <input type="text" id="case-input" value="bElajar miCROsoft eXcel" class="w-full p-2 border border-gray-300 rounded mb-6 focus:ring-2 focus:ring-purple-500 focus:outline-none" oninput="updateCase()">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <span class="text-xs font-mono text-purple-600">=LOWER()</span>
+                                <div id="lower-result" class="font-bold mt-1">belajar microsoft excel</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <span class="text-xs font-mono text-purple-600">=UPPER()</span>
+                                <div id="upper-result" class="font-bold mt-1">BELAJAR MICROSOFT EXCEL</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <span class="text-xs font-mono text-purple-600">=PROPER()</span>
+                                <div id="proper-result" class="font-bold mt-1">Belajar Microsoft Excel</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: EXTRACT -->
+            <div id="extract-section" class="section-content hidden space-y-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-teal-50 p-4 border-b border-teal-100">
+                        <h3 class="font-bold text-teal-800 text-lg">LEFT, MID, RIGHT</h3>
+                        <p class="text-sm text-teal-600">Mengambil karakter tertentu dari sebuah teks (misal: Kode Transaksi).</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contoh Kode (INV-2024-ID):</label>
+                            <input type="text" id="extract-input" value="INV-2024-ID" class="w-full p-2 border border-gray-300 rounded font-mono tracking-widest text-lg uppercase focus:ring-2 focus:ring-teal-500 focus:outline-none" oninput="updateExtract()">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- LEFT -->
+                            <div class="bg-white border rounded-lg p-4 shadow-sm relative group">
+                                <div class="absolute -top-3 left-3 bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded">=LEFT(text, num_chars)</div>
+                                <div class="mt-2 flex items-center gap-2 mb-2">
+                                    <label class="text-xs text-gray-500">Jml Karakter:</label>
+                                    <input type="number" id="left-num" value="3" min="1" max="20" class="w-16 p-1 border rounded text-sm" oninput="updateExtract()">
+                                </div>
+                                <div class="bg-gray-100 p-2 rounded text-center font-bold font-mono text-lg text-teal-700" id="left-result">INV</div>
+                                <p class="text-xs text-gray-400 mt-2 text-center">Mengambil dari KIRI</p>
+                            </div>
+
+                            <!-- MID -->
+                            <div class="bg-white border rounded-lg p-4 shadow-sm relative group">
+                                <div class="absolute -top-3 left-3 bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded">=MID(text, start, num)</div>
+                                <div class="mt-2 flex flex-col gap-2 mb-2">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-xs text-gray-500">Mulai ke:</label>
+                                        <input type="number" id="mid-start" value="5" min="1" class="w-12 p-1 border rounded text-sm" oninput="updateExtract()">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-xs text-gray-500">Jml Karakter:</label>
+                                        <input type="number" id="mid-num" value="4" min="1" class="w-12 p-1 border rounded text-sm" oninput="updateExtract()">
+                                    </div>
+                                </div>
+                                <div class="bg-gray-100 p-2 rounded text-center font-bold font-mono text-lg text-teal-700" id="mid-result">2024</div>
+                                <p class="text-xs text-gray-400 mt-2 text-center">Mengambil dari TENGAH</p>
+                            </div>
+
+                            <!-- RIGHT -->
+                            <div class="bg-white border rounded-lg p-4 shadow-sm relative group">
+                                <div class="absolute -top-3 left-3 bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded">=RIGHT(text, num_chars)</div>
+                                <div class="mt-2 flex items-center gap-2 mb-2">
+                                    <label class="text-xs text-gray-500">Jml Karakter:</label>
+                                    <input type="number" id="right-num" value="2" min="1" max="20" class="w-16 p-1 border rounded text-sm" oninput="updateExtract()">
+                                </div>
+                                <div class="bg-gray-100 p-2 rounded text-center font-bold font-mono text-lg text-teal-700" id="right-result">ID</div>
+                                <p class="text-xs text-gray-400 mt-2 text-center">Mengambil dari KANAN</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: COMBINE -->
+            <div id="combine-section" class="section-content hidden space-y-8">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Ampersand & CONCATENATE -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="font-bold text-indigo-800 text-lg mb-4">Metode Dasar (& dan CONCATENATE)</h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="join-1" value="Budi" class="p-2 border rounded" oninput="updateCombine()">
+                                <input type="text" id="join-2" value="Santoso" class="p-2 border rounded" oninput="updateCombine()">
+                            </div>
+                            
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <p class="text-xs text-gray-500 mb-1 font-mono">=A1 & " " & B1</p>
+                                <div id="ampersand-result" class="font-bold">Budi Santoso</div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-3 rounded border">
+                                <p class="text-xs text-gray-500 mb-1 font-mono">=CONCATENATE(A1, " ", B1)</p>
+                                <div id="concat-result" class="font-bold">Budi Santoso</div>
+                            </div>
+                            <p class="text-xs text-gray-500 italic">Harus diklik satu-satu (A1, B1). Tidak bisa blok range.</p>
+                        </div>
+                    </div>
+
+                    <!-- CONCAT (NEW) -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-indigo-800 text-lg">=CONCAT(text1...)</h3>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">New</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">Fitur Utama: Bisa menggabungkan <strong>RANGE (Blok Sel)</strong> sekaligus.</p>
+                        <div class="space-y-4">
+                            <!-- Simulating a Row Range -->
+                            <div class="flex gap-1 bg-gray-100 p-2 rounded border border-gray-300">
+                                <input type="text" id="concat-1" value="A" class="w-full p-2 border rounded text-center font-bold bg-white" oninput="updateCombine()">
+                                <input type="text" id="concat-2" value="B" class="w-full p-2 border rounded text-center font-bold bg-white" oninput="updateCombine()">
+                                <input type="text" id="concat-3" value="C" class="w-full p-2 border rounded text-center font-bold bg-white" oninput="updateCombine()">
+                            </div>
+                            
+                            <div class="bg-indigo-50 p-3 rounded border border-indigo-200">
+                                <p class="text-xs text-indigo-700 mb-1 font-mono font-bold">=CONCAT(A1:C1)</p>
+                                <div id="concat-modern-result" class="font-bold text-indigo-900">ABC</div>
+                            </div>
+                            <p class="text-xs text-gray-500 italic">Rumus ini menggabungkan isi range tanpa spasi/pemisah.</p>
+                        </div>
+                    </div>
+
+                    <!-- TEXTJOIN -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden lg:col-span-2">
+                        <div class="absolute top-0 right-0 bg-yellow-400 text-xs font-bold px-2 py-1 text-yellow-900 rounded-bl">RECOMMENDED</div>
+                        <h3 class="font-bold text-indigo-800 text-lg mb-4">=TEXTJOIN(delimiter, ignore_empty, text...)</h3>
+                        <p class="text-sm text-gray-600 mb-4">Level Lanjutan: Menggabungkan range + memberi pemisah otomatis + melewati sel kosong.</p>
+                        
+                        <div class="space-y-3">
+                            <div class="flex gap-2 items-center mb-2">
+                                <label class="text-sm">Pemisah:</label>
+                                <input type="text" id="tj-delimiter" value=", " class="w-12 p-1 border rounded text-center font-mono" oninput="updateCombine()">
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <input type="text" id="tj-1" value="Apel" class="w-full p-2 border rounded bg-white" oninput="updateCombine()">
+                                <input type="text" id="tj-2" value="Jeruk" class="w-full p-2 border rounded bg-white" oninput="updateCombine()">
+                                <input type="text" id="tj-3" value="" placeholder="(Kosong)" class="w-full p-2 border rounded bg-gray-50" oninput="updateCombine()">
+                                <input type="text" id="tj-4" value="Mangga" class="w-full p-2 border rounded bg-white" oninput="updateCombine()">
+                            </div>
+
+                            <div class="bg-green-50 p-3 rounded border border-green-200 mt-4">
+                                <p class="text-xs text-green-700 mb-1 font-mono font-bold">=TEXTJOIN(delimiter, TRUE, A1:A4)</p>
+                                <div id="textjoin-result" class="font-bold text-green-900">Apel, Jeruk, Mangga</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: DATE -->
+            <div id="date-section" class="section-content hidden space-y-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="bg-red-50 p-4 border-b border-red-100 flex justify-between items-center">
+                        <h3 class="font-bold text-red-800 text-lg">=DATE(year, month, day)</h3>
+                        <span class="bg-red-200 text-red-800 text-xs px-2 py-1 rounded font-bold">Membuat Tanggal Valid</span>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 mb-6 text-sm">Rumus ini sangat berguna jika data tanggal Anda terpisah di kolom yang berbeda (Tahun, Bulan, Hari).</p>
+                        
+                        <div class="flex flex-wrap gap-4 items-end mb-8 bg-gray-50 p-4 rounded-lg border">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Tahun (Year)</label>
+                                <input type="number" id="date-y" value="2025" class="w-24 p-2 border rounded text-center" oninput="updateDate()">
+                            </div>
+                            <div class="pb-3 text-gray-400 font-bold">/</div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Bulan (Month)</label>
+                                <input type="number" id="date-m" value="8" min="1" max="12" class="w-20 p-2 border rounded text-center" oninput="updateDate()">
+                            </div>
+                            <div class="pb-3 text-gray-400 font-bold">/</div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 mb-1">Hari (Day)</label>
+                                <input type="number" id="date-d" value="17" min="1" max="31" class="w-20 p-2 border rounded text-center" oninput="updateDate()">
+                            </div>
+                            <div class="ml-auto">
+                                <p class="text-xs text-red-500 font-mono mb-1">=DATE(2025, 8, 17)</p>
+                                <div id="date-result" class="text-xl font-bold text-gray-800 bg-white px-4 py-2 border rounded shadow-sm">17/08/2025</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <h4 class="font-bold text-blue-800 text-sm mb-2"><i class="fa-solid fa-lightbulb"></i> Tips Pemateri:</h4>
+                            <p class="text-xs text-blue-700 leading-relaxed">
+                                Excel sebenarnya menyimpan tanggal sebagai "Nomor Seri". <br>
+                                Nomor seri untuk tanggal di atas adalah: <span id="date-serial" class="font-mono font-bold"></span>.<br>
+                                Kita melihatnya sebagai tanggal karena <strong>Format Cell</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Navigation Logic
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            // Show selected
+            document.getElementById(sectionId + '-section').classList.remove('hidden');
+            
+            // Update Title
+            const titles = {
+                'clean': 'Pembersihan Data (Cleaning)',
+                'extract': 'Ekstraksi Data (Mengambil Bagian Teks)',
+                'combine': 'Penggabungan Data (Concatenation)',
+                'date': 'Format Tanggal (Date Function)'
+            };
+            document.getElementById('page-title').innerText = titles[sectionId];
+
+            // Update Active Nav State
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-green-800', 'border-r-4', 'border-green-400');
+            });
+            event.currentTarget.classList.add('bg-green-800', 'border-r-4', 'border-green-400');
+        }
+
+        // Logic: LEN
+        function updateLen() {
+            const val = document.getElementById('len-input').value;
+            document.getElementById('len-result').innerText = val.length;
+            document.getElementById('current-formula-display').innerText = `=LEN("${val}")`;
+        }
+
+        // Logic: TRIM
+        function updateTrim() {
+            const val = document.getElementById('trim-input').value;
+            const trimmed = val.trim().replace(/\s+/g, ' ');
+            document.getElementById('trim-result').innerText = trimmed;
+            document.getElementById('trim-original-len').innerText = val.length;
+            document.getElementById('trim-new-len').innerText = trimmed.length;
+            document.getElementById('current-formula-display').innerText = `=TRIM("${val}")`;
+        }
+
+        // Logic: Case
+        function updateCase() {
+            const val = document.getElementById('case-input').value;
+            document.getElementById('lower-result').innerText = val.toLowerCase();
+            document.getElementById('upper-result').innerText = val.toUpperCase();
+            
+            // Proper Case Logic (Capitalize first letter of each word)
+            const proper = val.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+            document.getElementById('proper-result').innerText = proper;
+            document.getElementById('current-formula-display').innerText = `Mengubah format huruf...`;
+        }
+
+        // Logic: Extract
+        function updateExtract() {
+            const text = document.getElementById('extract-input').value;
+            const leftNum = parseInt(document.getElementById('left-num').value) || 0;
+            const midStart = parseInt(document.getElementById('mid-start').value) || 1;
+            const midNum = parseInt(document.getElementById('mid-num').value) || 0;
+            const rightNum = parseInt(document.getElementById('right-num').value) || 0;
+
+            document.getElementById('left-result').innerText = text.substring(0, leftNum);
+            // Excel MID is 1-based index, JS is 0-based
+            document.getElementById('mid-result').innerText = text.substr(midStart - 1, midNum);
+            document.getElementById('right-result').innerText = text.slice(-rightNum);
+            
+            document.getElementById('current-formula-display').innerText = `=LEFT/MID/RIGHT("${text}", ...)`;
+        }
+
+        // Logic: Combine
+        function updateCombine() {
+            // Part 1: & and CONCATENATE (Legacy)
+            const v1 = document.getElementById('join-1').value;
+            const v2 = document.getElementById('join-2').value;
+            const combined = v1 + " " + v2;
+            document.getElementById('ampersand-result').innerText = combined;
+            document.getElementById('concat-result').innerText = combined;
+
+            // Part 2: CONCAT (Modern Range)
+            const c1 = document.getElementById('concat-1').value;
+            const c2 = document.getElementById('concat-2').value;
+            const c3 = document.getElementById('concat-3').value;
+            document.getElementById('concat-modern-result').innerText = c1 + c2 + c3;
+
+
+            // Part 3: TEXTJOIN
+            const delim = document.getElementById('tj-delimiter').value;
+            const t1 = document.getElementById('tj-1').value;
+            const t2 = document.getElementById('tj-2').value;
+            const t3 = document.getElementById('tj-3').value; // Empty check
+            const t4 = document.getElementById('tj-4').value;
+            
+            const arr = [t1, t2, t3, t4].filter(item => item !== ""); // Filter empty like ignore_empty=TRUE
+            document.getElementById('textjoin-result').innerText = arr.join(delim);
+            
+            // Default display
+            document.getElementById('current-formula-display').innerText = `Menggabungkan Teks...`;
+        }
+
+        // Logic: Date
+        function updateDate() {
+            const y = parseInt(document.getElementById('date-y').value);
+            const m = parseInt(document.getElementById('date-m').value) - 1; // JS Month is 0-11
+            const d = parseInt(document.getElementById('date-d').value);
+
+            const date = new Date(y, m, d);
+            
+            // Format DD/MM/YYYY
+            const formatted = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
+            
+            document.getElementById('date-result').innerText = formatted;
+
+            // Excel Serial Date calculation (Approximate starting from 1900)
+            // 25569 is the diff between Excel epoch and Unix epoch in days
+            const serial = Math.floor((date.getTime() / (1000 * 60 * 60 * 24)) + 25569);
+            document.getElementById('date-serial').innerText = serial;
+            
+            document.getElementById('current-formula-display').innerText = `=DATE(${y}, ${m + 1}, ${d})`;
+        }
+
+        // Init
+        updateLen();
+        updateTrim();
+        updateCase();
+        updateExtract();
+        updateCombine();
+        updateDate();
+
+    </script>
+</body>
+</html>
